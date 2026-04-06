@@ -1,0 +1,18 @@
+{
+  "name": "campaign-manager",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"yarn workspace @campaign-manager/backend dev\" \"yarn workspace @campaign-manager/frontend dev\"",
+    "build": "yarn workspace @campaign-manager/frontend build",
+    "test": "yarn workspace @campaign-manager/backend test",
+    "db:migrate": "yarn workspace @campaign-manager/backend db:migrate",
+    "db:seed": "yarn workspace @campaign-manager/backend db:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
