@@ -1,17 +1,17 @@
 interface ProgressBarProps {
-  label: string
-  value: number        // 0-100
-  colorClass?: string  // Tailwind bg color class
-  className?: string
+  label: string;
+  value: number;
+  colorClass?: string;
+  className?: string;
 }
 
 export default function ProgressBar({
   label,
   value,
-  colorClass = 'bg-primary-500',
-  className = '',
+  colorClass = "bg-primary-500",
+  className = "",
 }: ProgressBarProps) {
-  const clamped = Math.min(100, Math.max(0, value))
+  const clamped = Math.min(100, Math.max(0, value));
 
   return (
     <div className={`space-y-1 ${className}`}>
@@ -32,5 +32,5 @@ export default function ProgressBar({
         />
       </div>
     </div>
-  )
+  );
 }

@@ -1,12 +1,10 @@
-'use strict';
+"use strict";
 
-const { Model } = require('sequelize');
+const { Model } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class CampaignRecipient extends Model {
-    static associate(models) {
-      // associations handled by Campaign and Recipient models
-    }
+    static associate(models) {}
   }
 
   CampaignRecipient.init(
@@ -16,8 +14,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
         references: {
-          model: 'campaigns',
-          key: 'id',
+          model: "campaigns",
+          key: "id",
         },
       },
       recipient_id: {
@@ -25,8 +23,8 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true,
         references: {
-          model: 'recipients',
-          key: 'id',
+          model: "recipients",
+          key: "id",
         },
       },
       sent_at: {
@@ -38,18 +36,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
       },
       status: {
-        type: DataTypes.ENUM('pending', 'sent', 'failed'),
+        type: DataTypes.ENUM("pending", "sent", "failed"),
         allowNull: false,
-        defaultValue: 'pending',
+        defaultValue: "pending",
       },
     },
     {
       sequelize,
-      modelName: 'CampaignRecipient',
-      tableName: 'campaign_recipients',
+      modelName: "CampaignRecipient",
+      tableName: "campaign_recipients",
       underscored: true,
       timestamps: false,
-    }
+    },
   );
 
   return CampaignRecipient;

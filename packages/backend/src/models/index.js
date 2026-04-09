@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const path = require('path');
-const { Sequelize, DataTypes } = require('sequelize');
-require('dotenv').config();
+const fs = require("fs");
+const path = require("path");
+const { Sequelize, DataTypes } = require("sequelize");
+require("dotenv").config();
 
-const env = process.env.NODE_ENV || 'development';
-const config = require('../config/config.js')[env];
+const env = process.env.NODE_ENV || "development";
+const config = require("../config/config.js")[env];
 
 let sequelize;
 if (config.use_env_variable) {
@@ -16,19 +16,18 @@ if (config.use_env_variable) {
     config.database,
     config.username,
     config.password,
-    config
+    config,
   );
 }
 
 const db = {};
 
-// Load all model files except this index file
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
-      file.indexOf('.') !== 0 &&
+      file.indexOf(".") !== 0 &&
       file !== path.basename(__filename) &&
-      file.slice(-3) === '.js'
+      file.slice(-3) === ".js"
     );
   })
   .forEach((file) => {
@@ -36,7 +35,6 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
-// Run associations
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {
     db[modelName].associate(db);

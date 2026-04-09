@@ -1,13 +1,13 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import type { User } from '../types'
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { User } from "../types";
 
 interface AuthState {
-  token: string | null
-  user: User | null
-  isAuthenticated: boolean
-  setAuth: (token: string, user: User) => void
-  clearAuth: () => void
+  token: string | null;
+  user: User | null;
+  isAuthenticated: boolean;
+  setAuth: (token: string, user: User) => void;
+  clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -18,16 +18,15 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       setAuth: (token: string, user: User) => {
-        set({ token, user, isAuthenticated: true })
+        set({ token, user, isAuthenticated: true });
       },
 
       clearAuth: () => {
-        set({ token: null, user: null, isAuthenticated: false })
+        set({ token: null, user: null, isAuthenticated: false });
       },
     }),
     {
-      name: 'campaign-manager-auth',
-      // Only persist token and user; isAuthenticated is derived
+      name: "campaign-manager-auth",
       partialize: (state) => ({
         token: state.token,
         user: state.user,
@@ -35,4 +34,4 @@ export const useAuthStore = create<AuthState>()(
       }),
     },
   ),
-)
+);

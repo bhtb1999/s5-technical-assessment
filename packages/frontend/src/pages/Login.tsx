@@ -1,103 +1,105 @@
-import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { login as loginApi, register as registerApi } from '../api/auth'
-import { useAuthStore } from '../store/authStore'
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { login as loginApi, register as registerApi } from "../api/auth";
+import { useAuthStore } from "../store/authStore";
 
-type Mode = 'login' | 'register'
+type Mode = "login" | "register";
 
 interface FormErrors {
-  email?: string
-  password?: string
-  name?: string
-  general?: string
+  email?: string;
+  password?: string;
+  name?: string;
+  general?: string;
 }
 
 function validateEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 export default function Login() {
-  const navigate = useNavigate()
-  const setAuth = useAuthStore((s) => s.setAuth)
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const [mode, setMode] = useState<Mode>('login')
-  const [email, setEmail] = useState('')
-  const [name, setName] = useState('')
-  const [password, setPassword] = useState('')
-  const [errors, setErrors] = useState<FormErrors>({})
-  const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState<Mode>("login");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
 
-  // Already authed? Redirect away
   if (isAuthenticated) {
-    navigate('/campaigns', { replace: true })
-    return null
+    navigate("/campaigns", { replace: true });
+    return null;
   }
 
   function validate(): FormErrors {
-    const errs: FormErrors = {}
+    const errs: FormErrors = {};
     if (!email.trim()) {
-      errs.email = 'Email is required.'
+      errs.email = "Email is required.";
     } else if (!validateEmail(email.trim())) {
-      errs.email = 'Please enter a valid email address.'
+      errs.email = "Please enter a valid email address.";
     }
-    if (mode === 'register' && !name.trim()) {
-      errs.name = 'Name is required.'
+    if (mode === "register" && !name.trim()) {
+      errs.name = "Name is required.";
     }
     if (!password) {
-      errs.password = 'Password is required.'
+      errs.password = "Password is required.";
     } else if (password.length < 6) {
-      errs.password = 'Password must be at least 6 characters.'
+      errs.password = "Password must be at least 6 characters.";
     }
-    return errs
+    return errs;
   }
 
   async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    const errs = validate()
+    e.preventDefault();
+    const errs = validate();
     if (Object.keys(errs).length > 0) {
-      setErrors(errs)
-      return
+      setErrors(errs);
+      return;
     }
-    setErrors({})
-    setLoading(true)
+    setErrors({});
+    setLoading(true);
 
     try {
-      let result
-      if (mode === 'login') {
-        result = await loginApi(email.trim(), password)
+      let result;
+      if (mode === "login") {
+        result = await loginApi(email.trim(), password);
       } else {
-        result = await registerApi(email.trim(), name.trim(), password)
+        result = await registerApi(email.trim(), name.trim(), password);
       }
-      setAuth(result.token, result.user)
-      navigate('/campaigns', { replace: true })
+      setAuth(result.token, result.user);
+      navigate("/campaigns", { replace: true });
     } catch (err: unknown) {
-      const status = (err as { response?: { status?: number; data?: { message?: string } } })
-        ?.response?.status
+      const status = (
+        err as { response?: { status?: number; data?: { message?: string } } }
+      )?.response?.status;
       const message = (err as { response?: { data?: { message?: string } } })
-        ?.response?.data?.message
+        ?.response?.data?.message;
 
       if (status === 401 || status === 400) {
         setErrors({
           general:
             message ||
-            (mode === 'login'
-              ? 'Invalid credentials. Please check your email and password.'
-              : 'Registration failed. Please try again.'),
-        })
+            (mode === "login"
+              ? "Invalid credentials. Please check your email and password."
+              : "Registration failed. Please try again."),
+        });
       } else if (status === 409) {
-        setErrors({ general: 'An account with this email already exists.' })
+        setErrors({ general: "An account with this email already exists." });
       } else {
-        setErrors({ general: 'An unexpected error occurred. Please try again.' })
+        setErrors({
+          general: "An unexpected error occurred. Please try again.",
+        });
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   function toggleMode() {
-    setMode((m) => (m === 'login' ? 'register' : 'login'))
-    setErrors({})
+    setMode((m) => (m === "login" ? "register" : "login"));
+    setErrors({});
   }
 
   return (
@@ -122,9 +124,9 @@ export default function Login() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Campaign Manager</h1>
           <p className="text-sm text-gray-500 mt-1">
-            {mode === 'login'
-              ? 'Sign in to your account'
-              : 'Create your account to get started'}
+            {mode === "login"
+              ? "Sign in to your account"
+              : "Create your account to get started"}
           </p>
         </div>
 
@@ -150,7 +152,7 @@ export default function Login() {
           )}
 
           <form onSubmit={handleSubmit} noValidate className="space-y-4">
-            {mode === 'register' && (
+            {mode === "register" && (
               <div>
                 <label className="label" htmlFor="name">
                   Full name
@@ -159,7 +161,7 @@ export default function Login() {
                   id="name"
                   type="text"
                   autoComplete="name"
-                  className={`input ${errors.name ? 'input-error' : ''}`}
+                  className={`input ${errors.name ? "input-error" : ""}`}
                   placeholder="Jane Smith"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -177,7 +179,7 @@ export default function Login() {
                 id="email"
                 type="email"
                 autoComplete="email"
-                className={`input ${errors.email ? 'input-error' : ''}`}
+                className={`input ${errors.email ? "input-error" : ""}`}
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -193,14 +195,20 @@ export default function Login() {
               <input
                 id="password"
                 type="password"
-                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                className={`input ${errors.password ? 'input-error' : ''}`}
-                placeholder={mode === 'register' ? 'Min. 6 characters' : '••••••••'}
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
+                className={`input ${errors.password ? "input-error" : ""}`}
+                placeholder={
+                  mode === "register" ? "Min. 6 characters" : "••••••••"
+                }
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
               />
-              {errors.password && <p className="error-text">{errors.password}</p>}
+              {errors.password && (
+                <p className="error-text">{errors.password}</p>
+              )}
             </div>
 
             <button
@@ -210,7 +218,11 @@ export default function Login() {
             >
               {loading ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -225,31 +237,33 @@ export default function Login() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                     />
                   </svg>
-                  {mode === 'login' ? 'Signing in…' : 'Creating account…'}
+                  {mode === "login" ? "Signing in…" : "Creating account…"}
                 </>
-              ) : mode === 'login' ? (
-                'Sign in'
+              ) : mode === "login" ? (
+                "Sign in"
               ) : (
-                'Create account'
+                "Create account"
               )}
             </button>
           </form>
 
           <div className="mt-6 pt-5 border-t border-gray-100 text-center">
             <p className="text-sm text-gray-600">
-              {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
+              {mode === "login"
+                ? "Don't have an account?"
+                : "Already have an account?"}{" "}
               <button
                 type="button"
                 onClick={toggleMode}
                 className="font-medium text-primary-600 hover:text-primary-700 underline-offset-2 hover:underline transition-colors"
                 disabled={loading}
               >
-                {mode === 'login' ? 'Sign up' : 'Sign in'}
+                {mode === "login" ? "Sign up" : "Sign in"}
               </button>
             </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
